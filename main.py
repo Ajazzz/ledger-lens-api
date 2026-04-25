@@ -58,40 +58,27 @@ async def root():
 @app.post("/query")
 async def process_query(request: ChatRequest):
     try:
-        # A. Fetch previous context from Upstash (Last 3 messages)
-        history_key = f"chat_history:{request.user_id}"
-        previous_context = redis.lrange(history_key, 0, 2)
-        
-        # B. Construct Enhanced Query with Memory
-        full_query = f"Context from previous conversation: {previous_context}\nCurrent Question: {request.message}"
-        
-        # C. Execute RAG
-        response = engine.ask(full_query)
-        
-        # D. Save to Memory (Push to Redis)
-        redis.lpush(history_key, f"User: {request.message}", f"AI: {str(response)}")
-        redis.ltrim(history_key, 0, 10) # Keep only last 10 messages to save costs
+        # EXECUTE DIRECT FAST RAG
+        response = engine.ask(request.message)
         
         result_data = {
             "answer": str(response),
             "sources": [n.node.get_content()[:200] + "..." for n in response.source_nodes]
         }
         
-        # FIX 2: Manually attach CORS headers to the JSON response to prevent blocking
         api_response = JSONResponse(content=result_data)
         api_response.headers["Access-Control-Allow-Origin"] = "*"
         return api_response
-    
+        
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")
-        
-        # FIX 3: Manually attach CORS headers to error response so the browser reads the error
         error_response = JSONResponse(
-            content={"answer": f"Internal Financial Analysis Error: {str(e)}", "sources": []},
+            content={"answer": f"Internal Error: {str(e)}", "sources": []},
             status_code=500
         )
         error_response.headers["Access-Control-Allow-Origin"] = "*"
         return error_response
+
 
 if __name__ == "__main__":
     import uvicorn
