@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+llama-index-core
+llama-index-llms-groq
+llama-index-embeddings-huggingface-api
+llama-index-vector-stores-pinecone
+pinecone
+upstash-redis
+python-dotenv
