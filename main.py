@@ -19,7 +19,8 @@ app = FastAPI(title="LedgerLens API")
 # Enable CORS for your Next.js Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # In production, replace with your specific Replit URL
+    allow_origins=["*"], # Wildcard allows connections from any domain, including Vercel
+    allow_credentials=False, #In production, replace with your specific Replit URL
     allow_methods=["*"],
     allow_headers=["*"],
 )
