@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from upstash_redis import Redis
+from fastapi.middleware.cors import CORSMiddleware
 
 # Import your previous logic
 from query_engine import LedgerLensQuery
@@ -19,8 +20,8 @@ app = FastAPI(title="LedgerLens API")
 # Enable CORS for your Next.js Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Wildcard allows connections from any domain, including Vercel
-    allow_credentials=False, #In production, replace with your specific Replit URL
+    allow_origins=["*"], # Allows connections from any domain, bypassing the block
+    allow_credentials=False, # Must be False when using the wildcard "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
